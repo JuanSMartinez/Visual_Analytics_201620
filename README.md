@@ -13,6 +13,8 @@ Con esto en mente, la información sobre el recorrido de los buses en cuanto a s
 3. Preprocesar y Tratar los datos para obtener medidas estadísticas poblacionales que permitan caracterizar el comportamiento de los buses y en menor medida, del tráfico en la ciudad de Bahía Blanca.
 4. Derivar métricas que permitan caracterizar el comportamiento del tráfico de personas alrededor de la ciudad durante el día.
 
+Para mayor información sobre el proyecto, diríjase a consltar la [propuesta.](https://github.com/JuanSMartinez/Visual_Analytics_201620/tree/master/Documentos)
+
 ### Caracterización de visualizaciones
 
 #### What:
@@ -33,3 +35,7 @@ Para la Tarea 4: HeatMaps geográficos que representen las densidades de tráfic
 
 ### Colaboración
 El proyecto se desarrolla con la colaboración de Claudio Delrieux y Rodrigo René Cura, quienes proporcionaron los datos de tráfico en el transporte público de la ciudad.
+
+### URL del curso
+
+Este proyecto se desarrolla bajo el marco del curso de maestría "Visual Analytics" de la Universidad de los Andes, la página oficial del curso se encuentra en el siguiente [link](http://johnguerra.co/classes/isis_4822_fall_2016/)
