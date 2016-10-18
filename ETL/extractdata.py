@@ -148,7 +148,7 @@ def process_stop_points_info():
 
 
 if __name__ == '__main__':
-    os.chdir('./files')
+    os.chdir('./Data')
     print("stops: ")
     pprint(process_stop_points_info())
     print("control points: ")
