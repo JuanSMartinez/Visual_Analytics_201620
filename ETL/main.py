@@ -9,7 +9,24 @@ fname = "pcontrol.kmz"
 
 def main():
     records = read_kmz()
-    plot_speed(records)
+    format_records(records)
+
+def format_records(records):
+    formatted_records = np.array([])
+    for r in records:
+        entry = dict()
+        entry['Dia'] = int(r["Fecha"].split("/")[0])
+        entry['Mes'] = int(r["Fecha"].split("/")[1])
+        entry['Anio'] = int(r["Fecha"].split("/")[2])
+        entry['Hora'] = int(r["Hora"].split(":")[0])
+        entry['Minuto'] = int(r["Hora"].split(":")[1])
+        entry['Segundo'] = int(r["Hora"].split(":")[2])
+        entry['Velocidad'] = float(r["Velocidad"].rstrip("Km/h"))
+        entry['Latitud'] = float(r["Lat"])
+        entry['Longitud'] = float(r["Lon"])
+        formatted_records = np.append(formatted_records, entry)
+    print formatted_records
+
 
 def plot_speed(records):
     v = np.array([])
