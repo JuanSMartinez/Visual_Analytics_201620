@@ -5,13 +5,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-fname = "pcontrol.kmz"
+base_path = 'Data/'
+pcontrol = 'e-track-pcontrol-'
+pas = 'e-track-pas-'
+
 
 def main():
-    records = read_kmz()
-    format_records(records)
+    records = read_kmz('pcontrol.kmz')
+    for r in records:
+        print r
+    fomatted = format_speed_records(records)
 
-def format_records(records):
+def format_speed_records(records):
     formatted_records = np.array([])
     for r in records:
         entry = dict()
@@ -25,18 +30,9 @@ def format_records(records):
         entry['Latitud'] = float(r["Lat"])
         entry['Longitud'] = float(r["Lon"])
         formatted_records = np.append(formatted_records, entry)
-    print formatted_records
+    return formatted_records
 
-
-def plot_speed(records):
-    v = np.array([])
-    x = np.array([i for i in xrange(len(records))])
-    for r in records:
-        v = np.append(v, float(r["Velocidad"].rstrip("Km/h")))
-    plt.scatter(x,v)
-    plt.show()
-def decompress():
-    global fname
+def decompress(fname):
     zfile = zipfile.ZipFile(fname)
     #kml_string = '<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://earth.google.com/kml/2.2"><Document name="aja"><name>Example</name><Folder><Folder>F</Folder></Folder></Document></kml>'
     #kml_string = '<?xml version="1.0" encoding="UTF-8"?><kml><Document name="aja"><name>Example</name><Folder><Folder>F</Folder></Folder></Document></kml>'
@@ -49,10 +45,9 @@ def decompress():
     #root = etree.fromstring(kml_string)
     return root
 
-def read_kmz():
+def read_kmz(fname):
     records = np.array([])
-    kml = decompress()
-    print kml.tag
+    kml = decompress(fname)
     for child in kml.iter('ExtendedData'):
         baseRecord = dict()
         for data in child:
