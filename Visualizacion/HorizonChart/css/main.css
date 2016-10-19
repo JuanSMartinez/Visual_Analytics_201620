@@ -1,0 +1,26 @@
+body {
+    font-family: sans-serif;
+    background: white;
+    color: black;
+}
+svg {
+    position: absolute;
+    top: 0;
+}
+#horizon-controls {
+    position: absolute;
+    width: 940px;
+    padding: 10px;
+    z-index: 1;
+}
+#horizon-bands {
+    float: right;
+}
+#timing {
+    position: absolute;
+    bottom: 0;
+}
+
+#chart{
+    position: absolute;
+}
