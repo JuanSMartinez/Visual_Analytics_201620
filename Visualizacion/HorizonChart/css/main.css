@@ -24,3 +24,24 @@ svg {
 #chart{
     position: absolute;
 }
+
+.slider {
+  fill: #fff;
+  stroke: #e3dede;
+  stroke-width: 5px;
+}
+
+.dot circle:hover {
+  cursor: pointer;
+}
+
+.dot circle {
+  fill: lightsteelblue;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.dot circle.dragging {
+  fill: red;
+  stroke: brown;
+}
