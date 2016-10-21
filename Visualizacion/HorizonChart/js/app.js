@@ -93,27 +93,23 @@
         }
         
         function getX1(alpha){
-            var cos = Math.round(Math.cos(alpha) * 1000) / 1000;
-            return circumference_r*cos
+            var cos = Math.cos(alpha);
+            return (circumference_r-5)*cos
         }
         
         function getY1(alpha){
-            var sin = Math.round(Math.sin(alpha) * 1000) / 1000;
-            return circumference_r*sin
+            var sin = Math.sin(alpha);
+            return (circumference_r-5)*sin
         }
         
         function getX2(alpha){
-            var x1 = getX1(alpha);
-            var cos = Math.round(Math.cos(alpha) * 1000) / 1000;
-            var ang = Math.round(Math.sqrt(2)/2 * 1000) / 1000;
-            return x1 + 10*Math.sign(cos)*ang;
+            var cos = Math.cos(alpha);
+            return (circumference_r+5)*cos;
         }
         
         function getY2(alpha){
-            var y1 = getY1(alpha);
-            var sin = Math.round(Math.sin(alpha) * 1000) / 1000;
-            var ang = Math.round(Math.sqrt(2)/2 * 1000) / 1000;
-            return y1 +10*Math.sign(sin)*ang;
+            var sin = Math.sin(alpha);
+            return (circumference_r+5)*sin
         }
         
         function getX(alpha){
