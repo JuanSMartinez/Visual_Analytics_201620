@@ -71,8 +71,8 @@
                 .data(angularRange).enter().append("line")
                 .attr("x1", function(d) { return getX1(d); })
                 .attr("y1", function(d) { return getY1(d); })
-                .attr("x2", function(d) { return getX(d); })
-                .attr("y2", function(d) { return getY(d); })
+                .attr("x2", function(d) { return getX2(d); })
+                .attr("y2", function(d) { return getY2(d); })
                 .style("stroke-width", 1)
                 .style("stroke", "black")
                 .style("fill", "none");
@@ -100,6 +100,20 @@
         function getY1(alpha){
             var sin = Math.round(Math.sin(alpha) * 1000) / 1000;
             return circumference_r*sin
+        }
+        
+        function getX2(alpha){
+            var x1 = getX1(alpha);
+            var cos = Math.round(Math.cos(alpha) * 1000) / 1000;
+            var ang = Math.round(Math.sqrt(2)/2 * 1000) / 1000;
+            return x1 + 10*Math.sign(cos)*ang;
+        }
+        
+        function getY2(alpha){
+            var y1 = getY1(alpha);
+            var sin = Math.round(Math.sin(alpha) * 1000) / 1000;
+            var ang = Math.round(Math.sqrt(2)/2 * 1000) / 1000;
+            return y1 +10*Math.sign(sin)*ang;
         }
         
         function getX(alpha){
@@ -131,6 +145,7 @@
         function dragended(d) {
           d3.select(this)
             .classed("dragging", false);
+            
         }
     }
     
