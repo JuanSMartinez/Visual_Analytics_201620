@@ -113,13 +113,13 @@
         }
         
         function getX(alpha){
-            var cos = Math.round(Math.cos(alpha) * 1000) / 1000;
-            return circumference_r*cos + Math.sign(cos)*8;
+            var cos = Math.cos(alpha - (5/circumference_r)*Math.PI/180);
+            return (circumference_r+5)*cos
         }
         
         function getY(alpha){
-            var sin = Math.round(Math.sin(alpha) * 1000) / 1000;
-            return circumference_r*sin + Math.sign(sin)*8;
+            var sin = Math.sin(alpha - (10/circumference_r)*Math.PI/180);
+            return (circumference_r+10)*sin
         }
 
         function dragstarted(d) {
@@ -148,8 +148,15 @@
 
     
     function update(data){
-        var radius = [150, 120, 90];
-        radius.forEach(function(r){slider(r, data.map(function(d){return d["Minuto"];}))});
+        var radius = [100, 50];
+        //var monthRange = d3.range(1,13,1);
+        var monthRange = ["Enero", "Febrero", "Marzo", "Abril", "Mayo",
+                            "Junio", "Julio", "Agosto", "Septiembre", 
+                         "Octubre", "Noviembre", "Diciembre"];
+        var dayRange = d3.range(1,32,1);
+        slider(100, monthRange);
+        slider(60, dayRange);
+        //radius.forEach(function(r){slider(r, data.map(function(d){return d["Minuto"];}))});
      
     };
     
