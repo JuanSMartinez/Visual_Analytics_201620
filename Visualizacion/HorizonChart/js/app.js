@@ -16,6 +16,98 @@
     var scaleMonths = d3.scaleLinear().range([0, width]);
     var scaleYears = d3.scaleLinear().range([0, width]);
     
+    //Vertical slider
+    function vSlider(array, width){
+        //Remove duplicates
+        var newArray = [];
+        array.forEach(function(d){
+            var index = newArray.indexOf(d)
+            if(index < 0 )
+                newArray.push(d);
+        });
+        
+        var delta = width/array.length;
+        var linearRange = d3.range(0, width+1, delta);
+        console.log(linearRange);
+        var container = svg.append("g").attr("transform", "translate(" + effWidth/2 + "," + effHeight/2  +")");
+        
+        var line = container.append('line')
+        .attr('x1', -width/2)
+        .attr('y1', effHeight/2 )
+        .attr('x2', width/2)
+        .attr('y2', effHeight/2)
+        .style("stroke-width", 2)
+        .style("stroke", "black")
+        .style("fill", "none");
+        var drag = d3.drag()
+              .on("start", dragstarted)
+              .on("drag", dragged)
+              .on("end", dragended);
+        
+        handle = [{
+          x: 0,
+          y: effHeight/2
+        }];
+        
+        handle_circle = container.append("g")
+          .attr("class", "dot")
+            .selectAll('circle')
+          .data(handle)
+            .enter().append("circle")
+          .attr("r", 5)
+          .attr("cx", function(d) { return d.x;})
+          .attr("cy", function(d) { return d.y;})
+          .call(drag);
+        
+        var lines = container.append("g")
+                .selectAll('lines')
+                .data(linearRange).enter().append("line")
+                .attr("x1", function(d) { return d-width/2; })
+                .attr("y1", function(d) { return effHeight/2-5; })
+                .attr("x2", function(d) { return d-width/2; })
+                .attr("y2", function(d) { return effHeight/2+5; })
+                .style("stroke-width", 1)
+                .style("stroke", "black")
+                .style("fill", "none");
+        
+       var txt = container.append("g")
+                .selectAll('labels')
+                .data(linearRange).enter().append("text")
+                .attr("style","text-anchor: middle")
+                .attr("x", function(d) { return d-width/2; })
+                .attr("y", effHeight/2-10)
+                .text( function (d) { return newArray[linearRange.indexOf(d)]; })
+                .attr("font-family", "sans-serif")
+                .attr("font-size", "10px")
+                .attr("fill", "black");
+                //.attr("transform", function(d){return rotate(d);});
+        
+        
+        function dragstarted(d) {
+          d3.event.sourceEvent.stopPropagation();
+          d3.select(this)
+            .classed("dragging", true);
+        }
+
+        function dragged(d) {  
+            var pos;
+            if (d3.event.x > width/2)
+                pos = width/2;
+            else if(d3.event.x < -width/2)
+                pos = -width/2;
+            else
+                pos = d3.event.x;
+          d3.select(this)
+            .attr("cx", d.x = pos);
+        }
+
+        function dragended(d) {
+          d3.select(this)
+            .classed("dragging", false);
+            
+        }
+    }
+    
     //Round sliders
     function slider(circumference_r, array){
         //Remove duplicates
@@ -154,9 +246,11 @@
                             "Junio", "Julio", "Agosto", "Septiembre", 
                          "Octubre", "Noviembre", "Diciembre"];
         var dayRange = d3.range(1,32,1);
+        var yearRange = [2010,2011,2012,2013,2014,2015,2016];
         slider(100, monthRange);
         slider(60, dayRange);
-        //radius.forEach(function(r){slider(r, data.map(function(d){return d["Minuto"];}))});
+        vSlider(yearRange, 400);
+       
      
     };
     
