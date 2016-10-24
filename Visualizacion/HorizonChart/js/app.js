@@ -26,7 +26,7 @@
                 newArray.push(d);
         });
         
-        var delta = width/array.length;
+        var delta = width/(array.length-1);
         var linearRange = d3.range(0, width+1, delta);
         console.log(linearRange);
         var container = svg.append("g").attr("transform", "translate(" + effWidth/2 + "," + effHeight/2  +")");
