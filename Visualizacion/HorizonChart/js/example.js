@@ -36,13 +36,13 @@ function random() {
 }
 
 var width = 960;
-var height = 40;
+var height = 400;
 var updateDelay = 50;
 
 var chart = d3.horizon()
     .width(width)
     .height(height)
-    .bands(4)
+    .bands(2)
     .mode("offset")
     .curve(d3.curveMonotoneX)
     //.curve(d3.curveStep)
@@ -53,41 +53,11 @@ var svg = d3.select("body").append("svg")
     .attr("height", height);
 
 // Render the chart.
-var data = random();
-svg.data([random()]).call(chart);
+var data1 = random();
+var data2 = random();
+svg.data([data1, data2]).call(chart);
 
 d3.select("#horizon-bands-value").text(chart.bands());
-
-var timingElem = document.getElementById('timing');
-function toPrecision(num, precision) {
-    num = num.toString().split('.');
-    return num[0] + '.' + ((num[1] || '') + '0000000000').slice(0, precision);
-}
-function time(cb) {
-    var startTime = performance.now();
-    var ret = cb();
-    var endTime = performance.now();
-    var timingMessage = `Update took ${toPrecision(endTime - startTime, 3)} ms.`;
-    //console.log(timingMessage);
-    timingElem.innerHTML = timingMessage;
-    return ret;
-}
-
-// Re-render with shifted data every 1/10th of a second,
-// and re-render with completely new data every 2 seconds.
-function doUpdate() {
-    t += 1;
-    if(t >= 100) {
-        t = -5;
-        seed++;
-        svg.data([random()]).call(chart.duration(240));
-    } else if(t >= 0) {
-        var randomData = random();
-        time(() => svg.data([randomData]).call(chart.duration(0)));
-    }
-    setTimeout(doUpdate, updateDelay);
-}
-doUpdate();
 
 // Enable mode buttons.
 d3.selectAll("#horizon-controls input[name=mode]")

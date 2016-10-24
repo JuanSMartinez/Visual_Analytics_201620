@@ -16,8 +16,16 @@
     var scaleMonths = d3.scaleLinear().range([0, width]);
     var scaleYears = d3.scaleLinear().range([0, width]);
     
-    //Vertical slider
-    function vSlider(array, width){
+    //Horizon chart for velocity
+    function horizonChartVel(vel){
+        //
+    }
+    
+    //Horizontal slider
+    function hSlider(array, width, sel){
+        //For debugging purposes only
+        var value = sel.append("p");
+        
         //Remove duplicates
         var newArray = [];
         array.forEach(function(d){
@@ -28,9 +36,8 @@
         
         var delta = width/(array.length-1);
         var linearRange = d3.range(0, width+1, delta);
-        console.log(linearRange);
         var container = svg.append("g").attr("transform", "translate(" + effWidth/2 + "," + effHeight/2  +")");
-        
+       
         var line = container.append('line')
         .attr('x1', -width/2)
         .attr('y1', effHeight/2 )
@@ -83,13 +90,27 @@
                 //.attr("transform", function(d){return rotate(d);});
         
         
+        function closestTag(x){
+            
+            var closest;
+            var distance;
+            linearRange.forEach(function(xc){
+                
+                if(distance == undefined || Math.abs(xc-x) < distance){
+                    distance = Math.abs(xc-x);
+                    closest = newArray[linearRange.indexOf(xc)];
+                }
+            });
+            return closest;
+        }
+        
         function dragstarted(d) {
           d3.event.sourceEvent.stopPropagation();
           d3.select(this)
             .classed("dragging", true);
         }
 
-        function dragged(d) {  
+        function dragged(d) { 
             var pos;
             if (d3.event.x > width/2)
                 pos = width/2;
@@ -97,6 +118,8 @@
                 pos = -width/2;
             else
                 pos = d3.event.x;
+        
+            value.text("Selección:" + closestTag(pos+200));
           d3.select(this)
             .attr("cx", d.x = pos);
         }
@@ -109,7 +132,11 @@
     }
     
     //Round sliders
-    function slider(circumference_r, array){
+    function slider(circumference_r, array, sel){
+        
+        //Just for debugging purposes
+        var value = sel.append("p");
+        
         //Remove duplicates
         var newArray = [];
         array.forEach(function(d){
@@ -213,6 +240,18 @@
             var sin = Math.sin(alpha - (10/circumference_r)*Math.PI/180);
             return (circumference_r+10)*sin
         }
+        
+        function closestTag(alpha){
+            var closest;
+            var distance;
+            angularRange.forEach(function(angle){
+                if(distance == undefined || Math.abs(alpha-angle) < distance){
+                    distance = Math.abs(alpha-angle);
+                    closest = newArray[angularRange.indexOf(angle)];
+                }
+            });
+            return closest;
+        }
 
         function dragstarted(d) {
           d3.event.sourceEvent.stopPropagation();
@@ -221,11 +260,19 @@
         }
 
         function dragged(d) {  
-          d_from_origin = Math.sqrt(Math.pow(d3.event.x,2)+Math.pow(d3.event.y,2));
-
-          alpha = Math.acos(d3.event.x/d_from_origin);
-
-          d3.select(this)
+            d_from_origin = Math.sqrt(Math.pow(d3.event.x,2)+Math.pow(d3.event.y,2));
+            alpha = Math.acos(d3.event.x/d_from_origin);
+            var angle;
+            var x = d3.event.x;
+            var y = d3.event.y;
+            if(y < 0){
+                angle = 2*Math.PI - alpha;
+            }
+            else{
+                angle = alpha;    
+            }
+            value.text("Selección: " + closestTag(angle));
+            d3.select(this)
             .attr("cx", d.x = circumference_r*Math.cos(alpha))
             .attr("cy", d.y = d3.event.y < 0 ? -circumference_r*Math.sin(alpha) : circumference_r*Math.sin(alpha));
         }
@@ -237,21 +284,23 @@
         }
     }
     
-
+    //Generate average velocities for every bus line throughout a day and a month
     
     function update(data){
         var radius = [100, 50];
-        //var monthRange = d3.range(1,13,1);
         var monthRange = ["Enero", "Febrero", "Marzo", "Abril", "Mayo",
                             "Junio", "Julio", "Agosto", "Septiembre", 
                          "Octubre", "Noviembre", "Diciembre"];
         var dayRange = d3.range(1,32,1);
         var yearRange = [2010,2011,2012,2013,2014,2015,2016];
-        slider(100, monthRange);
-        slider(60, dayRange);
-        vSlider(yearRange, 400);
-       
-     
+        var vel = data.map(function(d){return {"Id": data["Linea"],"Velocidad":data["Velocidad"]};});
+        var selA = d3.select("#selA");
+        var selM = d3.select("#selM");
+        var selD = d3.select("#selD");
+        hSlider(yearRange, 400, selA);
+        slider(100, monthRange, selM);
+        slider(60, dayRange, selD);
+        
     };
     
     d3.json("json/buses.json", function(error, data){
