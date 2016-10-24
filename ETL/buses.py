@@ -5,6 +5,7 @@ fuente: http://wiki.openstreetmap.org/wiki/Bah%C3%ADa_Blanca/transporte_publico
 '''
 import numpy as np
 
+
 buses = ("500",
         "502",
         "503",
@@ -36,6 +37,7 @@ buses = ("500",
         "519A Aldea Romana",
         "519A Patagonia",
         "519A Prolongación Los Chañares Y V° Bordeu")
+
 
 def get_bus():
     global buses

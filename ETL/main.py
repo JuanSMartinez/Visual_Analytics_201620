@@ -21,6 +21,7 @@ def main():
     json.dump(string_array, f)
     f.close()
 
+
 def format_speed_records(records):
     formatted_records = np.array([])
     for r in records:
@@ -38,6 +39,7 @@ def format_speed_records(records):
         entry['Latitud'] = float(r["Lat"])
         entry['Longitud'] = float(r["Lon"])
         formatted_records = np.append(formatted_records, entry)
+
     return formatted_records
 
 def decompress(fname):

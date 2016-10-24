@@ -1,5 +1,8 @@
 (function(){
     
+    //Filter values
+    var year, month, day;
+    
     //SVG
     var width =800;
     var height = 500;
@@ -17,14 +20,49 @@
     var scaleYears = d3.scaleLinear().range([0, width]);
     
     //Horizon chart for velocity
-    function horizonChartVel(vel){
-        //
+    function horizonChartVel(data){
+        //Filter by date
+        /*
+        var filteredDate = data.map(function(d){
+            if (d["Anio"] == year && d["Mes"] == month && d["Dia"] == day)
+                return d;
+        });
+        
+        //Average velocities through hours
+        var filteredHours = filteredDate.map(function(d){
+            
+        });*/
+        
+        // generate some random data
+        var series = [];
+        for (var i = 0, variance = 0, value; i < 1500; i++) {
+            variance += (Math.random() - 0.5) / 10;
+            series.push(Math.abs(Math.cos(i/100) + variance)); // only positive values
+        }
+        var horizonChart = d3.horizonChart();
+        // 4-band horizon (4 negative & 4 positive bands)
+        var colors = ['#313695', '#4575b4', '#74add1', '#abd9e9', '#fee090', '#fdae61', '#f46d43', '#d73027'];
+        var n = colors.length / 2;
+        
+        var horizons = d3.select('#chart').selectAll('.horizon')
+            .data(d3.range(0, n).map(function() {return series;}))
+            .enter().append('div')
+            .attr('class', 'horizon')
+            .each(function(d, i) {
+                
+                var j = i+1;
+                horizonChart.colors(colors.slice(n-j, n+j))
+                    .height(120/j)
+                    .title('Horizon, ' + j + '-band (' + 120/j + 'px)')
+                    .call(this, d);
+                
+            });
+        
+        
     }
     
     //Horizontal slider
-    function hSlider(array, width, sel){
-        //For debugging purposes only
-        var value = sel.append("p");
+    function hSlider(array, width){
         
         //Remove duplicates
         var newArray = [];
@@ -118,9 +156,10 @@
                 pos = -width/2;
             else
                 pos = d3.event.x;
-        
-            value.text("Selección:" + closestTag(pos+200));
-          d3.select(this)
+
+            year = closestTag(pos + width/2);
+            
+            d3.select(this)
             .attr("cx", d.x = pos);
         }
 
@@ -132,10 +171,7 @@
     }
     
     //Round sliders
-    function slider(circumference_r, array, sel){
-        
-        //Just for debugging purposes
-        var value = sel.append("p");
+    function slider(circumference_r, array, type){
         
         //Remove duplicates
         var newArray = [];
@@ -271,7 +307,14 @@
             else{
                 angle = alpha;    
             }
-            value.text("Selección: " + closestTag(angle));
+            if(type=="month"){
+                month = newArray.indexOf(closestTag(angle)) + 1;
+              
+            }
+            else if(type=="day"){
+                day = closestTag(angle);
+                
+            }
             d3.select(this)
             .attr("cx", d.x = circumference_r*Math.cos(alpha))
             .attr("cy", d.y = d3.event.y < 0 ? -circumference_r*Math.sin(alpha) : circumference_r*Math.sin(alpha));
@@ -294,13 +337,11 @@
         var dayRange = d3.range(1,32,1);
         var yearRange = [2010,2011,2012,2013,2014,2015,2016];
         var vel = data.map(function(d){return {"Id": data["Linea"],"Velocidad":data["Velocidad"]};});
-        var selA = d3.select("#selA");
-        var selM = d3.select("#selM");
-        var selD = d3.select("#selD");
-        hSlider(yearRange, 400, selA);
-        slider(100, monthRange, selM);
-        slider(60, dayRange, selD);
         
+        hSlider(yearRange, 400);
+        slider(100, monthRange, "month");
+        slider(60, dayRange, "day");
+        horizonChartVel(data);
     };
     
     d3.json("json/buses.json", function(error, data){
