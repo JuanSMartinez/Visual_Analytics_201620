@@ -25,11 +25,29 @@
     //Horizon chart for velocity
     function horizonChartVel(data){
         
+        //Temporal functions
+        function generateSeries(){
+            var series = [];
+            for (var i = 0, variance = 0, value; i < 1500; i++) {
+                variance += (Math.random() - 0.5) / 10;
+                series.push(Math.abs(Math.cos(i/100) + variance)); // only positive values
+            }  
+            return series;
+        }
+        function generar(){
+            var datos = [];
+            for(var i = 0; i < 5; i++){
+                datos[i] = generateSeries(); 
+            }
+            return datos;
+        }
+        
         //Filter by date    
         var filteredDate = data.map(function(d){
-            if (d["Anio"] == year && d["Mes"] == month && d["Dia"] == day)
+            if (d["Anio"] == 2010 && d["Mes"] == 6 && d["Dia"] == 25)
                 return d;
         });
+        
         
         //Unique line ids
         var ids = [];
@@ -41,7 +59,7 @@
         
         //Array of average velocities per hour
         var array = [];
-        ids.forEach(function(d){
+        ids.forEach(function(d, i){
             var avgHour = []
             hours.forEach(function(h){
                 var averageHour = 0;
@@ -54,21 +72,20 @@
                 });
                 avgHour[h] = isNaN(averageHour/count) ? 0 : averageHour/count; 
             });
-            array[d] = avgHour;
+            array[i] = avgHour;
         });
         
-        
-        //Data bind
-        var horizon = d3.select("body").select('#container')
-                        .data(array).append("div").attr('class', 'horizon');
+        var r = d3.range(0, 2).map(function() {return generateSeries();});
+        console.log(array);
+        console.log(r);
+        var horizon = d3.select("body").select('#chart').selectAll(".horizon")
+                        .data(array)
+                        .enter()
+                        .append("div").attr('class', 'horizon')
+                        .each(function(d, i){
+                            horizonChart.title(ids[i]).call(this,d);
+                        });
 
-        //Enter
-        horizon.enter();
-
-        //Update
-        horizon.each(function(d){
-            horizonChart.title("").call(this, d);
-        });
         
     }
     
