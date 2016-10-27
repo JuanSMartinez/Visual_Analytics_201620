@@ -1,7 +1,6 @@
 (function(){
     
-    //Filter values
-    var year, month, day;
+    //BEGIN: Global parameters*****************************************************************************
     
     //SVG
     var width =300;
@@ -19,84 +18,35 @@
     horizonChart.colors(colors)
                 .height(10);
     
+    //Filtered data
+    var data;
+    
+    //Raw data
+    var rawData;
+    
+    //END: Global parameters*****************************************************************************
+    
+    //BEGIN: Generate control sliders*****************************************************************************
+    
     //Hour range
     var hours = d3.range(1,25,1);
     
-    //Horizon chart for velocity
-    function horizonChartVel(data){
-        
-        //Temporal functions
-        function generateSeries(){
-            var series = [];
-            for (var i = 0, variance = 0, value; i < 500; i++) {
-                variance += (Math.random() - 0.5) / 10;
-                series.push(Math.abs(Math.cos(i/100) + variance)); // only positive values
-            }  
-            return series;
-        }
-        function generar(){
-            var datos = [];
-            for(var i = 0; i < 5; i++){
-                datos[i] = generateSeries(); 
-            }
-            return datos;
-        }
-        
-        //Filter by date    
-        var filteredDate = data.map(function(d){
-            if (d["Anio"] == 2010 && d["Mes"] == 6 && d["Dia"] == 25)
-                return d;
-        });
-        
-        
-        //Unique line ids
-        var ids = [];
-        filteredDate.forEach(function(d){
-            var index = ids.indexOf(d["Linea"]);
-            if(index < 0)
-                ids.push(d["Linea"])
-        });
-        
-        //Array of average velocities per hour
-        var array = [];
-        ids.forEach(function(d, i){
-            var avgHour = []
-            hours.forEach(function(h){
-                var averageHour = 0;
-                var count = 0;
-                filteredDate.forEach(function(f){
-                    if(f["Hora"] == h && f["Linea"] == d){
-                        averageHour += f["Velocidad"];
-                        count += 1;
-                    }  
-                });
-                avgHour[h] = isNaN(averageHour/count) ? 0 : averageHour/count; 
-            });
-            //array[i] = avgHour;
-            array[i] = generateSeries();
-        });
-        
-        var horizon = d3.select("body").select('#chart').selectAll(".horizon")
-                        .data(array)
-                        .enter()
-                        .append("div").attr('class', 'horizon')
-                        .each(function(d, i){
-                            horizonChart.title(ids[i]).call(this,d);
-                        });
-
-        
-    }
+    //Month range
+    var monthRange = ["Enero", "Febrero", "Marzo", "Abril", "Mayo",
+                        "Junio", "Julio", "Agosto", "Septiembre", 
+                     "Octubre", "Noviembre", "Diciembre"];
+    
+    //Day range
+    var dayRange = d3.range(1,32,1);
+    
+    //Year range
+    var yearRange = [2010,2011,2012,2013,2014,2015,2016];
+    
+    //Selected  year, month and day
+    var year, month, day;
     
     //Horizontal slider
     function hSlider(array, width){
-        
-        //Remove duplicates
-        var newArray = [];
-        array.forEach(function(d){
-            var index = newArray.indexOf(d)
-            if(index < 0 )
-                newArray.push(d);
-        });
         
         var delta = width/(array.length-1);
         var linearRange = d3.range(0, width+1, delta);
@@ -147,7 +97,7 @@
                 .attr("style","text-anchor: middle")
                 .attr("x", function(d) { return d-width/2; })
                 .attr("y", effHeight/2-10)
-                .text( function (d) { return newArray[linearRange.indexOf(d)]; })
+                .text( function (d) { return array[linearRange.indexOf(d)]; })
                 .attr("font-family", "sans-serif")
                 .attr("font-size", "10px")
                 .attr("fill", "black");
@@ -162,7 +112,7 @@
                 
                 if(distance == undefined || Math.abs(xc-x) < distance){
                     distance = Math.abs(xc-x);
-                    closest = newArray[linearRange.indexOf(xc)];
+                    closest = array[linearRange.indexOf(xc)];
                 }
             });
             return closest;
@@ -185,7 +135,7 @@
             year = closestTag(pos + width/2);
             d3.select(this)
             .attr("cx", d.x = pos);
-
+            filterData(rawData);
         }
 
         function dragended(d) {
@@ -198,15 +148,7 @@
     //Round sliders
     function slider(circumference_r, array, type){
         
-        //Remove duplicates
-        var newArray = [];
-        array.forEach(function(d){
-            var index = newArray.indexOf(d)
-            if(index < 0 )
-                newArray.push(d);
-        });
-        
-        var delta = 2*Math.PI/(newArray.length);
+        var delta = 2*Math.PI/(array.length);
         var angularRange = d3.range(0, 2*Math.PI, delta);
         
         var drag = d3.drag()
@@ -240,7 +182,7 @@
                 .attr("style", function(d){return anchor(d);})
                 .attr("x", function(d) { return getX(d); })
                 .attr("y", function(d) { return getY(d); })
-                .text( function (d) { return newArray[angularRange.indexOf(d)]; })
+                .text( function (d) { return array[angularRange.indexOf(d)]; })
                 .attr("font-family", "sans-serif")
                 .attr("font-size", "10px")
                 .attr("fill", "black")
@@ -308,7 +250,7 @@
             angularRange.forEach(function(angle){
                 if(distance == undefined || Math.abs(alpha-angle) < distance){
                     distance = Math.abs(alpha-angle);
-                    closest = newArray[angularRange.indexOf(angle)];
+                    closest = array[angularRange.indexOf(angle)];
                 }
             });
             return closest;
@@ -333,7 +275,7 @@
                 angle = alpha;    
             }
             if(type=="month"){
-                month = newArray.indexOf(closestTag(angle)) + 1;
+                month = array.indexOf(closestTag(angle)) + 1;
               
             }
             else if(type=="day"){
@@ -343,39 +285,108 @@
             d3.select(this)
             .attr("cx", d.x = circumference_r*Math.cos(alpha))
             .attr("cy", d.y = d3.event.y < 0 ? -circumference_r*Math.sin(alpha) : circumference_r*Math.sin(alpha));
+            filterData(rawData);
         }
 
         function dragended(d) {
           d3.select(this)
             .classed("dragging", false);
-            
+    
         }
     }
     
-    //Generate average velocities for every bus line throughout a day and a month
+    //Generate sliders
+    hSlider(yearRange, 200);
+    slider(100, monthRange, "month");
+    slider(60, dayRange, "day");
     
-    function update(data){
-        var radius = [100, 50];
-        var monthRange = ["Enero", "Febrero", "Marzo", "Abril", "Mayo",
-                            "Junio", "Julio", "Agosto", "Septiembre", 
-                         "Octubre", "Noviembre", "Diciembre"];
-        var dayRange = d3.range(1,32,1);
-        var yearRange = [2010,2011,2012,2013,2014,2015,2016];
-        var vel = data.map(function(d){return {"Id": data["Linea"],"Velocidad":data["Velocidad"]};});
+    //END: Generate control sliders*****************************************************************************
+    
+    //BEGIN: Filter data*****************************************************************************
+    
+    function filterData(rawData){
         
-        hSlider(yearRange, 200);
-        slider(100, monthRange, "month");
-        slider(60, dayRange, "day");
-        horizonChartVel(data);
-    };
+        //Temporal functions
+        function generateSeries(){
+            var series = [];
+            for (var i = 0, variance = 0, value; i < 500; i++) {
+                variance += (Math.random() - 0.5) / 10;
+                series.push(Math.abs(Math.cos(i/100) + variance)); // only positive values
+            }  
+            return series;
+        }
+        function generar(){
+            var datos = [];
+            for(var i = 0; i < 5; i++){
+                datos[i] = generateSeries(); 
+            }
+            return datos;
+        }
+
+        //Filter by date    
+        var filteredDate = rawData.map(function(d){
+            if (d["Anio"] == 2010 && d["Mes"] == 6 && d["Dia"] == 25)
+                return d;
+        });
+
+
+        //Unique line ids
+        var ids = [];
+        filteredDate.forEach(function(d){
+            var index = ids.indexOf(d["Linea"]);
+            if(index < 0)
+                ids.push(d["Linea"])
+        });
+
+        //Array of average velocities per hour
+        var array = [];
+        ids.forEach(function(d, i){
+            var avgHour = []
+            hours.forEach(function(h){
+                var averageHour = 0;
+                var count = 0;
+                filteredDate.forEach(function(f){
+                    if(f["Hora"] == h && f["Linea"] == d){
+                        averageHour += f["Velocidad"];
+                        count += 1;
+                    }  
+                });
+                avgHour[h] = isNaN(averageHour/count) ? 0 : averageHour/count; 
+            });
+            //array[i] = avgHour;
+            array[i] = generateSeries();
+        });   
+        
+        data = array;
+        rawData = rawData;
+    }
     
+    //END: Filter data*****************************************************************************
+    
+    //BEGIN: Update of horizon charts***************************************************************************
+    
+    function update(){
+        var horizon = d3.select("body").select('#chart').selectAll(".horizon")
+                        .data(data)
+                        .enter()
+                        .append("div").attr('class', 'horizon')
+                        .each(function(d, i){
+                            horizonChart.call(this,d);
+                        });
+    }
+    
+    //END: Update of horizon charts*****************************************************************************
+    
+    //BEGIN: Read json***************************************************************************
     
     d3.json("json/buses.json", function(error, data){
        if(error){
            throw error;
        }
-       update(data)  
+       filterData(data)  
+       update()
     });
     
-    
+    //END: Read json*****************************************************************************
+
 })();

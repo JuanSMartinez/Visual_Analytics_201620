@@ -45,6 +45,7 @@ svg {
 
 #chart{
     position: absolute;
+    padding-left: 300;
 }
 
 .slider {
