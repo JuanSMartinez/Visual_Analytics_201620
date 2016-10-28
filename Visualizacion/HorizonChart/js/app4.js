@@ -9,20 +9,31 @@
     //BEGIN: Global parameters*****************************************************************************
     
     //SVG
-    var width =300;
-    var height = 350;
+    var width =950;
+    var height = 800;
     var margin = {top: 20, left: 20, right: 20, bottom: 20};
     var effWidth = width - margin.left - margin.right;
     var effHeight = height - margin.top - margin.bottom;
-    var svg = d3.select("#container").append("svg")
+    var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
+        
+    //Velocity chart container
+    var velocityContainer = svg.append("g").attr("transform", "translate("+effWidth/2+",0)");
+        
+    //People container
+    var peopleContainer = svg.append("g").attr("transform", "translate("+3*effWidth/4+",0)");
     
     //Velocity horizon chart
-    var horizonChart = d3.horizonChart();
-    var colors = ['#313695', '#4575b4', '#74add1', '#abd9e9', '#fee090', '#fdae61', '#f46d43', '#d73027'];
-    horizonChart.colors(colors)
-                .height(10);
+    var delta = 10;
+    var chart = d3.horizon()
+                    .width(effWidth/4 - delta)
+                    .height(10)
+                    .bands(4)
+                    .mode("offset")
+                    .curve(d3.curveMonotoneX)
+                    //.curve(d3.curveStep)
+                    .colors(["#ff7e71", "#891d00", "#005227", "#00bd62"]);
         
     //Filtered data
     var filtered;
@@ -49,17 +60,17 @@
     var year, month, day;
     
     //Horizontal slider
-    function hSlider(array, width){
+    function hSlider(array, height, width, x, y){
         
         var delta = width/(array.length-1);
         var linearRange = d3.range(0, width+1, delta);
-        var container = svg.append("g").attr("transform", "translate(" + effWidth/2 + "," + effHeight/2  +")");
+        var container = svg.append("g").attr("class", "control").attr("transform", "translate(" + x + "," + y +")");
        
         var line = container.append('line')
         .attr('x1', -width/2)
-        .attr('y1', effHeight/2 )
+        .attr('y1', height/2 )
         .attr('x2', width/2)
-        .attr('y2', effHeight/2)
+        .attr('y2', height/2)
         .style("stroke-width", 2)
         .style("stroke", "black")
         .style("fill", "none");
@@ -70,7 +81,7 @@
         
         handle = [{
           x: 0,
-          y: effHeight/2
+          y: height/2
         }];
         
         handle_circle = container.append("g")
@@ -87,9 +98,9 @@
                 .selectAll('lines')
                 .data(linearRange).enter().append("line")
                 .attr("x1", function(d) { return d-width/2; })
-                .attr("y1", function(d) { return effHeight/2-5; })
+                .attr("y1", function(d) { return height/2-5; })
                 .attr("x2", function(d) { return d-width/2; })
-                .attr("y2", function(d) { return effHeight/2+5; })
+                .attr("y2", function(d) { return height/2+5; })
                 .style("stroke-width", 1)
                 .style("stroke", "black")
                 .style("fill", "none");
@@ -99,7 +110,7 @@
                 .data(linearRange).enter().append("text")
                 .attr("style","text-anchor: middle")
                 .attr("x", function(d) { return d-width/2; })
-                .attr("y", effHeight/2-10)
+                .attr("y", height/2-10)
                 .text( function (d) { return array[linearRange.indexOf(d)]; })
                 .attr("font-family", "sans-serif")
                 .attr("font-size", "10px")
@@ -138,19 +149,19 @@
             year = closestTag(pos + width/2);
             d3.select(this)
             .attr("cx", d.x = pos);
-            filterData(data);
-            update();
+            
         }
 
         function dragended(d) {
           d3.select(this)
             .classed("dragging", false);
-            
+            filterData(data);
+            update();
         }
     }
     
     //Round sliders
-    function slider(circumference_r, array, type){
+    function slider(circumference_r, array, type, width, height, x, y){
         
         var delta = 2*Math.PI/(array.length);
         var angularRange = d3.range(0, 2*Math.PI, delta);
@@ -160,7 +171,7 @@
               .on("drag", dragged)
               .on("end", dragended);
     
-        var container = svg.append("g").attr("transform", "translate(" + effWidth/2 + "," + effHeight/2 + ")");;
+        var container = svg.append("g").attr("class", "control").attr("transform", "translate(" + x + "," + y + ")");
         var circumference = container.append('circle')
         .attr('r', circumference_r)
         .attr('class', 'slider');
@@ -289,26 +300,26 @@
             d3.select(this)
             .attr("cx", d.x = circumference_r*Math.cos(alpha))
             .attr("cy", d.y = d3.event.y < 0 ? -circumference_r*Math.sin(alpha) : circumference_r*Math.sin(alpha));
-            filterData(data);
-            update();
+            
         }
 
         function dragended(d) {
           d3.select(this)
             .classed("dragging", false);
-    
+            filterData(data);
+            update();
         }
     }
     
     //Generate sliders
-    hSlider(yearRange, 200);
-    slider(100, monthRange, "month");
-    slider(60, dayRange, "day");
+    slider(100, monthRange, "month", effWidth/4, effHeight/8, effWidth/4 , 150);
+    slider(60, dayRange, "day", effWidth/4, effHeight/8 , effWidth/4 , 150);
+    hSlider(yearRange, effHeight/8, effWidth/4, effWidth/4, 260);
     
     //END: Generate control sliders*****************************************************************************
     
     //BEGIN: Filter data*****************************************************************************
-    
+    /*
     function filterData(rawData){
         
         //Temporal functions
@@ -365,20 +376,39 @@
         filtered = array;
         
     }
-    
-    //END: Filter data*****************************************************************************
+    */
+    //END: Filter data*****************************************************************************************
+        
+    //BEGIN: Temporal Filter data function
+        
+    function filterData(rawData){
+        n = 48;
+        charts = 31;
+        data = [];
+        for(var c = 0; c< charts; c++){
+            array = [];
+            for (var i = 0 ; i < n; i++){
+                y = Math.random()*10;
+                array.push([i,y]);
+            }
+            data.push(array);
+        }
+        filtered = data;
+        
+    }
     
     //BEGIN: Update of horizon charts***************************************************************************
-    
+        
     function update(){
         
-        var horizon = d3.select("body").select('#chart').selectAll(".horizon")
-                        .data(filtered)
-                        .enter()
-                        .append("div").attr('class', 'horizon')
-                        .each(function(d, i){
-                            horizonChart.call(this,d);
-                        });
+        filtered.forEach(function(array, i){
+            var velChartContainer = velocityContainer.append("g").attr("class","chart").attr("transform", "translate(0,"+i*12+")");
+            velChartContainer.data([array]).call(chart.duration(240));
+            
+            var peopleChartContainer = peopleContainer.append("g").attr("class","chart").attr("transform", "translate(0,"+i*12+")");
+            peopleChartContainer.data([array]).call(chart.duration(240));
+                                                                            
+        });
     }
     
     //END: Update of horizon charts*****************************************************************************

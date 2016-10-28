@@ -2,7 +2,7 @@
 //Autor: David H. Bronke
 
 // START horizon.js ////////////////////////////////
-  d3.horizon = function() {
+ d3.horizon = function() {
     var bands = 1, // between 1 and 5, typically
         mode = "offset", // or mirror
         curve = d3.curveLinear, // or basis, monotone, step-before, etc.
