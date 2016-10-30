@@ -9,7 +9,7 @@
     //BEGIN: Global parameters*****************************************************************************
     
     //SVG
-    var width =950;
+    var width =1200;
     var height = 800;
     var margin = {top: 20, left: 20, right: 20, bottom: 20};
     var effWidth = width - margin.left - margin.right;
@@ -18,16 +18,27 @@
     .attr("width", width)
     .attr("height", height);
         
+    //Round slider radius
+    var rMonth = 100;
+    var rDay = 60;    
+        
+    //Shift for round sliders due to text
+    var radialDelta = 125;
+        
+    //Shift of horiozon charts
+    var horizonDelta = 20;
+        
+    //Width of horizon charts
+    var hWidth = (effWidth - (2*rMonth+radialDelta))/2 - horizonDelta;
+        
     //Velocity chart container
-    var velocityContainer = svg.append("g").attr("transform", "translate("+effWidth/2+",0)");
+    var velocityContainer = svg.append("g").attr("transform", "translate("+(2*rMonth+radialDelta + horizonDelta/2)+",0)");
         
     //People container
-    var peopleContainer = svg.append("g").attr("transform", "translate("+3*effWidth/4+",0)");
-    
-    //Velocity horizon chart
-    var delta = 10;
+    var peopleContainer = svg.append("g").attr("transform", "translate("+(2*rMonth+radialDelta+hWidth + horizonDelta)+",0)");
+
     var chart = d3.horizon()
-                    .width(effWidth/4 - delta)
+                    .width(hWidth)
                     .height(10)
                     .bands(4)
                     .mode("offset")
@@ -79,6 +90,17 @@
               .on("drag", dragged)
               .on("end", dragended);
         
+        var lines = container.append("g")
+                .selectAll('lines')
+                .data(linearRange).enter().append("line")
+                .attr("x1", function(d) { return d-width/2; })
+                .attr("y1", function(d) { return height/2-5; })
+                .attr("x2", function(d) { return d-width/2; })
+                .attr("y2", function(d) { return height/2+5; })
+                .style("stroke-width", 1)
+                .style("stroke", "black")
+                .style("fill", "none");
+        
         handle = [{
           x: 0,
           y: height/2
@@ -94,16 +116,7 @@
           .attr("cy", function(d) { return d.y;})
           .call(drag);
         
-        var lines = container.append("g")
-                .selectAll('lines')
-                .data(linearRange).enter().append("line")
-                .attr("x1", function(d) { return d-width/2; })
-                .attr("y1", function(d) { return height/2-5; })
-                .attr("x2", function(d) { return d-width/2; })
-                .attr("y2", function(d) { return height/2+5; })
-                .style("stroke-width", 1)
-                .style("stroke", "black")
-                .style("fill", "none");
+        
         
        var txt = container.append("g")
                 .selectAll('labels')
@@ -155,8 +168,8 @@
         function dragended(d) {
           d3.select(this)
             .classed("dragging", false);
-            filterData(data);
-            update();
+           filterData(data);
+            update(); 
         }
     }
     
@@ -175,6 +188,17 @@
         var circumference = container.append('circle')
         .attr('r', circumference_r)
         .attr('class', 'slider');
+        
+        var line = container.append("g")
+                .selectAll('lines')
+                .data(angularRange).enter().append("line")
+                .attr("x1", function(d) { return getX1(d); })
+                .attr("y1", function(d) { return getY1(d); })
+                .attr("x2", function(d) { return getX2(d); })
+                .attr("y2", function(d) { return getY2(d); })
+                .style("stroke-width", 1)
+                .style("stroke", "black")
+                .style("fill", "none");
 
         handle = [{
           x: 0,
@@ -203,16 +227,7 @@
                 .attr("fill", "black")
                 .attr("transform", function(d){return rotate(d);});
         
-        var line = container.append("g")
-                .selectAll('lines')
-                .data(angularRange).enter().append("line")
-                .attr("x1", function(d) { return getX1(d); })
-                .attr("y1", function(d) { return getY1(d); })
-                .attr("x2", function(d) { return getX2(d); })
-                .attr("y2", function(d) { return getY2(d); })
-                .style("stroke-width", 1)
-                .style("stroke", "black")
-                .style("fill", "none");
+        
         
         function anchor(alpha){
             var cos = Math.round(Math.cos(alpha) * 1000) / 1000;
@@ -312,9 +327,9 @@
     }
     
     //Generate sliders
-    slider(100, monthRange, "month", effWidth/4, effHeight/8, effWidth/4 , 150);
-    slider(60, dayRange, "day", effWidth/4, effHeight/8 , effWidth/4 , 150);
-    hSlider(yearRange, effHeight/8, effWidth/4, effWidth/4, 260);
+    slider(rMonth, monthRange, "month", 2*rMonth+radialDelta, effHeight/8, rMonth + radialDelta/2 , 150);
+    slider(rDay, dayRange, "day", 2*rDay+radialDelta, effHeight/8 , rMonth + radialDelta/2 , 150);
+    hSlider(yearRange, effHeight/8, effWidth/4, rMonth + radialDelta/2, 260);
     
     //END: Generate control sliders*****************************************************************************
     
