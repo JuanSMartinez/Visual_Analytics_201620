@@ -10,7 +10,7 @@
     
     //SVG
     var width =1200;
-    var height = 800;
+    var height = 725;
     var margin = {top: 20, left: 20, right: 20, bottom: 20};
     var effWidth = width - margin.left - margin.right;
     var effHeight = height - margin.top - margin.bottom;
@@ -31,11 +31,26 @@
     //Width of horizon charts
     var hWidth = (effWidth - (2*rMonth+radialDelta))/2 - horizonDelta;
         
+        
     //Velocity chart container
-    var velocityContainer = svg.append("g").attr("transform", "translate("+(2*rMonth+radialDelta + horizonDelta/2)+",0)");
+    var velocityContainer = svg.append("g").attr("transform", "translate("+(2*rMonth+radialDelta + horizonDelta/2)+","+effHeight/2+")");
         
     //People container
-    var peopleContainer = svg.append("g").attr("transform", "translate("+(2*rMonth+radialDelta+hWidth + horizonDelta)+",0)");
+    var peopleContainer = svg.append("g").attr("transform", "translate("+(2*rMonth+radialDelta+hWidth + horizonDelta)+","+effHeight/2+")");
+        
+    //Map container
+    var rawPercentageWidth = (innerWidth - (2*rMonth+radialDelta + innerWidth - effWidth+20))/innerWidth;
+    var widthPercentage = Math.floor(100*rawPercentageWidth);
+    var rawPercentageHeight = ((height)/2-40)/innerHeight;
+    var heightPercentage = Math.floor(100*rawPercentageHeight);
+    
+    var mapContainer = d3.select("body").append("div").attr("id","map");
+    mapContainer
+        .style("width",  widthPercentage+"%")
+        .style("height",heightPercentage + "%")
+        .style("left", (2*rMonth+radialDelta+ horizonDelta) + "px");
+    var map = L.Mapzen.map('map');
+    map.setView([-38.717530, -62.265174], 12);  
 
     var chart = d3.horizon()
                     .width(hWidth)
@@ -133,16 +148,18 @@
         
         function closestTag(x){
             
-            var closest;
+            var closestTag;
             var distance;
+            var closestPos;
             linearRange.forEach(function(xc){
                 
                 if(distance == undefined || Math.abs(xc-x) < distance){
                     distance = Math.abs(xc-x);
-                    closest = array[linearRange.indexOf(xc)];
+                    closestTag = array[linearRange.indexOf(xc)];
+                    closestPos = xc;
                 }
             });
-            return closest;
+            return [closestTag, closestPos];
         }
         
         function dragstarted(d) {
@@ -159,23 +176,24 @@
                 pos = -width/2;
             else
                 pos = d3.event.x;
-            year = closestTag(pos + width/2);
+            year = closestTag(pos + width/2)[0];
+            var position = closestTag(pos + width/2)[1]
             d3.select(this)
-            .attr("cx", d.x = pos);
+            .attr("cx", d.x = position-width/2);
             
         }
 
         function dragended(d) {
           d3.select(this)
             .classed("dragging", false);
-           filterData(data);
+            filterData(data);
             update(); 
         }
     }
     
     //Round sliders
     function slider(circumference_r, array, type, width, height, x, y){
-        
+       
         var delta = 2*Math.PI/(array.length);
         var angularRange = d3.range(0, 2*Math.PI, delta);
         
@@ -275,15 +293,18 @@
         }
         
         function closestTag(alpha){
-            var closest;
+            var closestTag;
+            var closestAngle;
             var distance;
             angularRange.forEach(function(angle){
                 if(distance == undefined || Math.abs(alpha-angle) < distance){
                     distance = Math.abs(alpha-angle);
-                    closest = array[angularRange.indexOf(angle)];
+                    closestTag = array[angularRange.indexOf(angle)];
+                    closestAngle = angle;
                 }
             });
-            return closest;
+            
+            return [closestTag, closestAngle];
         }
 
         function dragstarted(d) {
@@ -305,16 +326,19 @@
                 angle = alpha;    
             }
             if(type=="month"){
-                month = array.indexOf(closestTag(angle)) + 1;
-              
-            }
-            else if(type=="day"){
-                day = closestTag(angle);
+                month = array.indexOf(closestTag(angle)[0]) + 1;
                 
             }
+            else if(type=="day"){
+                day = closestTag(angle)[0];
+                
+            }
+            var closestAngle = closestTag(angle)[1];
             d3.select(this)
-            .attr("cx", d.x = circumference_r*Math.cos(alpha))
-            .attr("cy", d.y = d3.event.y < 0 ? -circumference_r*Math.sin(alpha) : circumference_r*Math.sin(alpha));
+            //.attr("cx", d.x = circumference_r*Math.cos(closestAngle))
+            //.attr("cy", d.y = d3.event.y < 0 ? -circumference_r*Math.sin(closestAngle) : circumference_r*Math.sin(closestAngle));
+            .attr("cx", d.x = circumference_r*Math.cos(closestAngle))
+            .attr("cy", d.y = circumference_r*Math.sin(closestAngle));
             
         }
 
@@ -327,9 +351,11 @@
     }
     
     //Generate sliders
-    slider(rMonth, monthRange, "month", 2*rMonth+radialDelta, effHeight/8, rMonth + radialDelta/2 , 150);
-    slider(rDay, dayRange, "day", 2*rDay+radialDelta, effHeight/8 , rMonth + radialDelta/2 , 150);
-    hSlider(yearRange, effHeight/8, effWidth/4, rMonth + radialDelta/2, 260);
+    slider(rMonth, monthRange, "month", 2*rMonth+radialDelta, effHeight/8, rMonth + radialDelta/2 , effHeight/2);
+    slider(rDay, dayRange, "day", 2*rDay+radialDelta, effHeight/8 , rMonth + radialDelta/2 , effHeight/2);
+    hSlider(yearRange, effHeight/8, effWidth/4, rMonth + radialDelta/2, effHeight/2+125);
+    
+    
     
     //END: Generate control sliders*****************************************************************************
     
@@ -403,7 +429,7 @@
         for(var c = 0; c< charts; c++){
             array = [];
             for (var i = 0 ; i < n; i++){
-                y = Math.random()*10;
+                y = Math.random()*10-5;
                 array.push([i,y]);
             }
             data.push(array);

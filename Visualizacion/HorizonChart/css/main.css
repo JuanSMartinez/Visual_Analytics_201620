@@ -37,3 +37,7 @@ svg {
   fill: red;
   stroke: brown;
 }
+
+#map {
+        position: absolute;
+      }
