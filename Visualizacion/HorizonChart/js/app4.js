@@ -1,6 +1,6 @@
 (function(){
+
     //BEGIN: Read json***************************************************************************
-    
     d3.json("json/buses.json", function(error, data){
        if(error){
            throw error;
@@ -31,18 +31,20 @@
     //Width of horizon charts
     var hWidth = (effWidth - (2*rMonth+radialDelta))/2 - horizonDelta;
         
-        
     //Velocity chart container
     var velocityContainer = svg.append("g").attr("transform", "translate("+(2*rMonth+radialDelta + horizonDelta/2)+","+effHeight/2+")");
+    var velocityContainers = [];
         
     //People container
     var peopleContainer = svg.append("g").attr("transform", "translate("+(2*rMonth+radialDelta+hWidth + horizonDelta)+","+effHeight/2+")");
+    var peopleContainers = [];
         
     //Map container
     var rawPercentageWidth = (innerWidth - (2*rMonth+radialDelta + innerWidth - effWidth+20))/innerWidth;
     var widthPercentage = Math.floor(100*rawPercentageWidth);
     var rawPercentageHeight = ((height)/2-40)/innerHeight;
     var heightPercentage = Math.floor(100*rawPercentageHeight);
+    
     
     var mapContainer = d3.select("body").append("div").attr("id","map");
     mapContainer
@@ -51,15 +53,22 @@
         .style("left", (2*rMonth+radialDelta+ horizonDelta) + "px");
     var map = L.Mapzen.map('map');
     map.setView([-38.717530, -62.265174], 12);  
+    var markers = new L.FeatureGroup();
+    var marker = L.marker([-38.717530, -62.265174]);
+    markers.addLayer(marker);
+    map.addLayer(markers);
 
+    //Chart 
+    var bands = 1;
+    var chartHeight = 10;
     var chart = d3.horizon()
                     .width(hWidth)
-                    .height(10)
-                    .bands(4)
+                    .height(chartHeight)
+                    .bands(bands)
                     .mode("offset")
                     .curve(d3.curveMonotoneX)
                     //.curve(d3.curveStep)
-                    .colors(["#ff7e71", "#891d00", "#005227", "#00bd62"]);
+                    .colors(["#fac173", "#ffa310", "#1877e5", "#1ad5f7"]);
         
     //Filtered data
     var filtered;
@@ -186,8 +195,10 @@
         function dragended(d) {
           d3.select(this)
             .classed("dragging", false);
-            filterData(data);
+            //filterData(data);
+            killData();
             update(); 
+            
         }
     }
     
@@ -424,17 +435,47 @@
         
     function filterData(rawData){
         n = 48;
+        //charts = 3;
         charts = 31;
         data = [];
         for(var c = 0; c< charts; c++){
             array = [];
             for (var i = 0 ; i < n; i++){
+                //y = Math.random()*10-5;
+                if (i%2 == 0)
+                    y = 1;
+                else 
+                    y = 0;
                 y = Math.random()*10-5;
                 array.push([i,y]);
+                
             }
             data.push(array);
         }
         filtered = data;
+        
+    }
+        
+    function killData(){
+        n = 48;
+        //charts = 3;
+        charts = 31;
+        data = [];
+        for(var c = 0; c< charts; c++){
+            array = [];
+            for (var i = 0 ; i < n; i++){
+                //y = Math.random()*10-5;
+                if (i%2 == 0)
+                    y = -1;
+                else 
+                    y = 0;
+            y = Math.random()*10-5;
+            array.push([i,y]);
+            }
+            data.push(array);
+        }
+        filtered = data;
+        
         
     }
     
@@ -442,12 +483,43 @@
         
     function update(){
         
+        if(velocityContainers.length == 0){
+            filtered.forEach(function(array, i){
+                var g = velocityContainer.append("g").attr("id","containerG"); 
+                velocityContainers.push(g);
+            });
+        }
+        if(peopleContainers.length == 0){
+            filtered.forEach(function(array, i){
+                var g = peopleContainer.append("g").attr("id","containerG"); 
+                peopleContainers.push(g);
+            });
+        }
+        
         filtered.forEach(function(array, i){
-            var velChartContainer = velocityContainer.append("g").attr("class","chart").attr("transform", "translate(0,"+i*12+")");
-            velChartContainer.data([array]).call(chart.duration(240));
             
-            var peopleChartContainer = peopleContainer.append("g").attr("class","chart").attr("transform", "translate(0,"+i*12+")");
-            peopleChartContainer.data([array]).call(chart.duration(240));
+            //Join
+            var chartIV = velocityContainers[i].selectAll("g").data([array]);
+            var chartIP = peopleContainers[i].selectAll("g").data([array]);
+            
+            //Update
+            chartIV.attr("class","chart")
+                .attr("transform", "translate(0,"+i*(chartHeight+2)+")")
+                .call(chart.duration(1000));
+            chartIP.attr("class","chart")
+                .attr("transform", "translate(0,"+i*(chartHeight+2)+")")
+                .call(chart.duration(1000));
+        
+            //Enter
+            chartIV.enter().append("g")
+                .attr("class","chart")
+                .attr("transform", "translate(0,"+i*(chartHeight+2)+")")
+                .call(chart.duration(1000));
+            chartIP.enter().append("g")
+                .attr("class","chart")
+                .attr("transform", "translate(0,"+i*(chartHeight+2)+")")
+                .call(chart.duration(1000));
+            
                                                                             
         });
     }
