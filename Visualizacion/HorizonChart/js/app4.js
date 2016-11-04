@@ -59,8 +59,8 @@
     map.addLayer(markers);
 
     //Chart 
-    var bands = 1;
-    var chartHeight = 10;
+    var bands = 2;
+    var chartHeight = 13;
     var chart = d3.horizon()
                     .width(hWidth)
                     .height(chartHeight)
@@ -436,7 +436,7 @@
     function filterData(rawData){
         n = 48;
         //charts = 3;
-        charts = 31;
+        charts = 23;
         data = [];
         for(var c = 0; c< charts; c++){
             array = [];
@@ -459,7 +459,7 @@
     function killData(){
         n = 48;
         //charts = 3;
-        charts = 31;
+        charts = 23;
         data = [];
         for(var c = 0; c< charts; c++){
             array = [];
@@ -505,20 +505,20 @@
             //Update
             chartIV.attr("class","chart")
                 .attr("transform", "translate(0,"+i*(chartHeight+2)+")")
-                .call(chart.duration(1000));
+                .call(chart.duration(2000));
             chartIP.attr("class","chart")
                 .attr("transform", "translate(0,"+i*(chartHeight+2)+")")
-                .call(chart.duration(1000));
+                .call(chart.duration(2000));
         
             //Enter
             chartIV.enter().append("g")
                 .attr("class","chart")
                 .attr("transform", "translate(0,"+i*(chartHeight+2)+")")
-                .call(chart.duration(1000));
+                .call(chart.duration(1500));
             chartIP.enter().append("g")
                 .attr("class","chart")
                 .attr("transform", "translate(0,"+i*(chartHeight+2)+")")
-                .call(chart.duration(1000));
+                .call(chart.duration(1500));
             
                                                                             
         });
