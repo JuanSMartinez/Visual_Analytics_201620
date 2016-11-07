@@ -70,6 +70,14 @@
                     //.curve(d3.curveStep)
                     .colors(["#fac173", "#ffa310", "#1877e5", "#1ad5f7"]);
         
+    //Horizontal time scale
+    var halfHourScale = d3.scaleLinear().domain([0, 48]).range([0, hWidth]);
+    
+    //Horizontal axis
+    var xAxisVel = d3.axisBottom().scale(halfHourScale).ticks(d3.timeMinute.every(30));//.tickFormat(d3.time.tickFormat("%I:%M"));
+    var xAxisVelG = svg.append("g").attr("transform","translate("+(2*rMonth+radialDelta + horizonDelta/2)+","+(effHeight/2+(23*(chartHeight+2)))+")")
+    .call(xAxisVel);
+        
     //Filtered data
     var filtered;
     
@@ -195,8 +203,7 @@
         function dragended(d) {
           d3.select(this)
             .classed("dragging", false);
-            //filterData(data);
-            killData();
+            filterData(data);
             update(); 
             
         }
@@ -374,22 +381,7 @@
     /*
     function filterData(rawData){
         
-        //Temporal functions
-        function generateSeries(){
-            var series = [];
-            for (var i = 0, variance = 0, value; i < 500; i++) {
-                variance += (Math.random() - 0.5) / 10;
-                series.push(Math.abs(Math.cos(i/100) + variance)); // only positive values
-            }  
-            return series;
-        }
-        function generar(){
-            var datos = [];
-            for(var i = 0; i < 5; i++){
-                datos[i] = generateSeries(); 
-            }
-            return datos;
-        }
+        
 
         //Filter by date    
         var filteredDate = rawData.map(function(d){
@@ -465,11 +457,12 @@
             array = [];
             for (var i = 0 ; i < n; i++){
                 //y = Math.random()*10-5;
+                var y;
                 if (i%2 == 0)
-                    y = -1;
+                    y = 1;
                 else 
                     y = 0;
-            y = Math.random()*10-5;
+            //y = Math.random()*10-5;
             array.push([i,y]);
             }
             data.push(array);
@@ -514,11 +507,11 @@
             chartIV.enter().append("g")
                 .attr("class","chart")
                 .attr("transform", "translate(0,"+i*(chartHeight+2)+")")
-                .call(chart.duration(1500));
+                .call(chart.duration(2000));
             chartIP.enter().append("g")
                 .attr("class","chart")
                 .attr("transform", "translate(0,"+i*(chartHeight+2)+")")
-                .call(chart.duration(1500));
+                .call(chart.duration(2000));
             
                                                                             
         });
