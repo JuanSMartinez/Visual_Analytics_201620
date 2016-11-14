@@ -9,14 +9,13 @@ import buses
 import json
 
 base_path = 'Data/'
-pcontrol = 'e-track-pcontrol-'
-pas = 'e-track-pas-'
+pcontrol = '*/*/*/*/*/e-track-pcontrol-*.kmz'
 
 
 def main():
     records = read_kmz('pcontrol.kmz')
     formatted = format_speed_records(records)
-    string_array =  formatted.tolist()
+    string_array = formatted.tolist()
     f = open("buses.json","wb")
     json.dump(string_array, f)
     f.close()

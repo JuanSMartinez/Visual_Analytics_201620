@@ -9,16 +9,10 @@ import numpy as np
 buses = ("500",
         "502",
         "503",
-        "503 Prolongación Solares Norte / CONICET",
         "504",
-        "504 Prolongación Paraje El Guanaco",
         "505",
-        "505 Prolongación Balneario Maldonado",
         "506",
-        "506 Prolongación Cementerio",
         "507",
-        "507 Prolongación Barrio Espora (período escolar)",
-        "507 Directo Harding Green",
         "509",
         "509 Prolongación Cementerio",
         "512",
@@ -34,9 +28,7 @@ buses = ("500",
         "518",
         "519",
         "519 por Escuela Media Nº 7",
-        "519A Aldea Romana",
-        "519A Patagonia",
-        "519A Prolongación Los Chañares Y V° Bordeu")
+        "519A Aldea Romana")
 
 
 def get_bus():
