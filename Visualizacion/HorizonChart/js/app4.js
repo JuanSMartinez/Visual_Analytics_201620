@@ -9,7 +9,7 @@
     //BEGIN: Global parameters*****************************************************************************
     
     //SVG
-    var width =1200;
+    var width =1300;
     var height = 725;
     var margin = {top: 20, left: 20, right: 20, bottom: 20};
     var effWidth = width - margin.left - margin.right;
@@ -71,12 +71,27 @@
                     .colors(["#fac173", "#ffa310", "#1877e5", "#1ad5f7"]);
         
     //Horizontal time scale
-    var halfHourScale = d3.scaleLinear().domain([0, 48]).range([0, hWidth]);
-    
+    //var halfHourScale = d3.scaleLinear().domain([0, 4]).range([0, hWidth]);
+    var halfHourScale = d3.scaleTime().domain([new Date, new Date])
+                        .nice(d3.timeDay)
+                        .range([0, hWidth]);
     //Horizontal axis
-    var xAxisVel = d3.axisBottom().scale(halfHourScale).ticks(d3.timeMinute.every(30));//.tickFormat(d3.time.tickFormat("%I:%M"));
+    var xAxisVel = d3.axisBottom(halfHourScale).ticks(d3.timeMinute.every(30)).tickFormat(d3.timeFormat("%H:%M"));
     var xAxisVelG = svg.append("g").attr("transform","translate("+(2*rMonth+radialDelta + horizonDelta/2)+","+(effHeight/2+(23*(chartHeight+2)))+")")
-    .call(xAxisVel);
+    .call(xAxisVel).selectAll("text")
+    .attr("y", 0)
+    .attr("x", 9)
+    .attr("dy", ".35em")
+    .attr("transform", "rotate(90)")
+    .style("text-anchor", "start");
+        
+    var xAxisPeopleG = svg.append("g").attr("transform","translate("+(2*rMonth+radialDelta+hWidth + horizonDelta)+","+(effHeight/2+(23*(chartHeight+2)))+")")
+    .call(xAxisVel).selectAll("text")
+    .attr("y", 0)
+    .attr("x", 9)
+    .attr("dy", ".35em")
+    .attr("transform", "rotate(90)")
+    .style("text-anchor", "start");
         
     //Filtered data
     var filtered;
