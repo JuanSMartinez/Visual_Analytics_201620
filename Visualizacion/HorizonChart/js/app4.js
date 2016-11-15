@@ -425,7 +425,7 @@
     //Generate sliders
     slider(rMonth, monthRange, "month", 2*rMonth+radialDelta, effHeight/8, rMonth + radialDelta/2 , effHeight/2);
     slider(rDay, dayRange, "day", 2*rDay+radialDelta, effHeight/8 , rMonth + radialDelta/2 , effHeight/2);
-    hSlider(yearRange, effHeight/8, effWidth/4, rMonth + radialDelta/2, effHeight/2+125);
+    hSlider(yearRange, effHeight/8, effWidth/5, rMonth + radialDelta/2, effHeight/2+125);
     
     //END: Generate control sliders*****************************************************************************
     
