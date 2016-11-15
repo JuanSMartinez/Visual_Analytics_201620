@@ -34,10 +34,48 @@
     //Velocity chart container
     var velocityContainer = svg.append("g").attr("transform", "translate("+(2*rMonth+radialDelta + horizonDelta/2)+","+effHeight/2+")");
     var velocityContainers = [];
+    var velocityHoverRect = svg.append("g").append("rect")
+            .attr("x", (2*rMonth+radialDelta + horizonDelta/2))
+            .attr("width", hWidth)
+            .attr("y", effHeight/2)
+            .attr("height", effHeight)
+            .style("opacity", 0);
+    var cursorLineV = svg.append("g")
+            .append("line")
+            .attr("x1", (2*rMonth+radialDelta + horizonDelta/2))
+            .attr("y1", effHeight/2)
+            .attr("x2", (2*rMonth+radialDelta + horizonDelta/2))
+            .attr("y2", effHeight)
+            .style("stroke-width", 1)
+            .style("stroke", "black")
+            .style("fill", "none");
+    velocityHoverRect.on("mousemove", function(){
+        cursorLineV.attr("x1", d3.mouse(this)[0] );
+        cursorLineV.attr("x2", d3.mouse(this)[0] );
+    });
         
     //People container
     var peopleContainer = svg.append("g").attr("transform", "translate("+(2*rMonth+radialDelta+hWidth + horizonDelta)+","+effHeight/2+")");
     var peopleContainers = [];
+    var peopleHoverRect = svg.append("g").append("rect")
+            .attr("x", (2*rMonth+radialDelta+hWidth + horizonDelta))
+            .attr("width", hWidth)
+            .attr("y", effHeight/2)
+            .attr("height", effHeight)
+            .style("opacity", 0);
+    var cursorLineP = svg.append("g")
+            .append("line")
+            .attr("x1", (2*rMonth+radialDelta+hWidth + horizonDelta))
+            .attr("y1", effHeight/2)
+            .attr("x2", (2*rMonth+radialDelta+hWidth + horizonDelta))
+            .attr("y2", effHeight)
+            .style("stroke-width", 1)
+            .style("stroke", "black")
+            .style("fill", "none");
+    peopleHoverRect.on("mousemove", function(){
+        cursorLineP.attr("x1", d3.mouse(this)[0] );
+        cursorLineP.attr("x2", d3.mouse(this)[0] );
+    });
         
     //Map container
     var rawPercentageWidth = (innerWidth - (2*rMonth+radialDelta + innerWidth - effWidth+20))/innerWidth;
