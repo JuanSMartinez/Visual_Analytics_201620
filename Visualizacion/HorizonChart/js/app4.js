@@ -35,11 +35,11 @@
     var velocityContainer = svg.append("g").attr("transform", "translate("+(2*rMonth+radialDelta + horizonDelta/2)+","+effHeight/2+")");
     var velocityContainers = [];
     var velocityHoverRect = svg.append("g").append("rect")
-            .attr("x", (2*rMonth+radialDelta + horizonDelta/2))
-            .attr("width", hWidth)
-            .attr("y", effHeight/2)
-            .attr("height", effHeight)
-            .style("opacity", 0);
+        .attr("x", (2*rMonth+radialDelta + horizonDelta/2))
+        .attr("width", hWidth)
+        .attr("y", effHeight/2)
+        .attr("height", effHeight)
+        .style("opacity", 0);
     var cursorLineV = svg.append("g")
             .append("line")
             .attr("x1", (2*rMonth+radialDelta + horizonDelta/2))
@@ -48,7 +48,8 @@
             .attr("y2", effHeight)
             .style("stroke-width", 1)
             .style("stroke", "black")
-            .style("fill", "none");
+            .style("fill", "none")
+            .on("click", function(){clickedLatLng(d3.mouse(this)[0],d3.mouse(this)[1], (2*rMonth+radialDelta + horizonDelta/2));});
     velocityHoverRect.on("mousemove", function(){
         cursorLineV.attr("x1", d3.mouse(this)[0] );
         cursorLineV.attr("x2", d3.mouse(this)[0] );
@@ -426,15 +427,11 @@
     slider(rDay, dayRange, "day", 2*rDay+radialDelta, effHeight/8 , rMonth + radialDelta/2 , effHeight/2);
     hSlider(yearRange, effHeight/8, effWidth/4, rMonth + radialDelta/2, effHeight/2+125);
     
-    
-    
     //END: Generate control sliders*****************************************************************************
     
     //BEGIN: Filter data*****************************************************************************
     /*
     function filterData(rawData){
-        
-        
 
         //Filter by date    
         var filteredDate = rawData.map(function(d){
@@ -466,8 +463,7 @@
                 });
                 avgHour[h] = isNaN(averageHour/count) ? 0 : averageHour/count; 
             });
-            //array[i] = avgHour;
-            array[i] = generateSeries();
+            array[i] = avgHour;
         });   
         
         filtered = array;
@@ -564,11 +560,23 @@
             chartIP.enter().append("g")
                 .attr("class","chart")
                 .attr("transform", "translate(0,"+i*(chartHeight+2)+")")
-                .call(chart.duration(2000));
-            
-                                                                            
+                .call(chart.duration(2000));                                                               
         });
+        
     }
+        
+    //BEGIN: Get position values from clicked data in the horizon charts **************************************
+        
+    function clickedLatLng(x, y, xShift){
+        var linePosition = Math.floor((y - effHeight/2)/(chartHeight+2));
+        var halfHourSize = hWidth/48;
+        var halfHourPosition = Math.floor((x - xShift)/halfHourSize);
+        var halfHour = filtered[linePosition][halfHourPosition][0];
+        var velocity = filtered[linePosition][halfHourPosition][1];
+        console.log(velocity);
+    }
+    
+    //END: Get position values from clicked data in the horizon charts ****************************************
     
     //END: Update of horizon charts*****************************************************************************
         
