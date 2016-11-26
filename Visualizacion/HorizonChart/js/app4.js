@@ -134,13 +134,16 @@
         
     //Filtered data
     var filtered;
+        
+    //Localization data
+    var localizationData;
     
     //END: Global parameters*****************************************************************************
     
     //BEGIN: Generate control sliders*****************************************************************************
     
     //Hour range
-    var hours = d3.range(1,25,1);
+    var hours = d3.range(0,48,1);
     
     //Month range
     var monthRange = ["Enero", "Febrero", "Marzo", "Abril", "Mayo",
@@ -474,51 +477,36 @@
         
     //BEGIN: Temporal Filter data function
         
+    var testPositions = [[-38.723837, -62.273433],
+                         [-38.712163, -62.278646],
+                         [-38.691591, -62.234931],
+                         [-38.704266, -62.293353],
+                         [-38.700962, -62.271367],
+                         [-38.667934, -62.265776],
+                         [-38.753081, -62.266180],
+                         [-38.736157, -62.288434],
+                         [-38.714423, -62.195488],
+                         [-38.705742, -62.207347]];
+        
     function filterData(rawData){
         n = 48;
-        //charts = 3;
         charts = 23;
         data = [];
+        positions = [];
         for(var c = 0; c< charts; c++){
             array = [];
+            arrayPos = [];
             for (var i = 0 ; i < n; i++){
-                //y = Math.random()*10-5;
-                if (i%2 == 0)
-                    y = 1;
-                else 
-                    y = 0;
                 y = Math.random()*10-5;
                 array.push([i,y]);
-                
+                randomIndex = Math.floor(Math.random() * 9);
+                arrayPos.push(testPositions[randomIndex]);
             }
             data.push(array);
+            positions.push(arrayPos);
         }
         filtered = data;
-        
-    }
-        
-    function killData(){
-        n = 48;
-        //charts = 3;
-        charts = 23;
-        data = [];
-        for(var c = 0; c< charts; c++){
-            array = [];
-            for (var i = 0 ; i < n; i++){
-                //y = Math.random()*10-5;
-                var y;
-                if (i%2 == 0)
-                    y = 1;
-                else 
-                    y = 0;
-            //y = Math.random()*10-5;
-            array.push([i,y]);
-            }
-            data.push(array);
-        }
-        filtered = data;
-        
-        
+        localizationData = positions;
     }
     
     //BEGIN: Update of horizon charts***************************************************************************
@@ -566,14 +554,30 @@
     }
         
     //BEGIN: Get position values from clicked data in the horizon charts **************************************
-        
+    var line = false;
+        var polyline;
     function clickedLatLng(x, y, xShift){
         var linePosition = Math.floor((y - effHeight/2)/(chartHeight+2));
         var halfHourSize = hWidth/48;
         var halfHourPosition = Math.floor((x - xShift)/halfHourSize);
         var halfHour = filtered[linePosition][halfHourPosition][0];
         var velocity = filtered[linePosition][halfHourPosition][1];
-        console.log(velocity);
+        
+        var localizationArray = localizationData[linePosition];
+        var latLong = localizationArray[halfHour];
+        markers.removeLayer(marker);
+        marker = L.marker(latLong);
+        markers.addLayer(marker);
+        
+        if(!line){
+            polyline = L.polyline(testPositions, {color: 'red'}).addTo(map);
+            line = true;
+        }
+        else{
+            map.removeLayer(polyline);
+            line = false;
+        }
+        
     }
     
     //END: Get position values from clicked data in the horizon charts ****************************************

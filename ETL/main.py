@@ -7,18 +7,23 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import buses
 import json
+import glob
 
 base_path = 'Data/'
 pcontrol = '*/*/*/*/*/e-track-pcontrol-*.kmz'
 
 
 def main():
+    global  pcontrol
+    for name in glob.glob(pcontrol):
+        print name
+    '''
     records = read_kmz('pcontrol.kmz')
     formatted = format_speed_records(records)
     string_array = formatted.tolist()
     f = open("buses.json","wb")
     json.dump(string_array, f)
-    f.close()
+    f.close()'''
 
 
 def format_speed_records(records):
