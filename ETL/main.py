@@ -29,9 +29,12 @@ def main():
     for f in matches:
         i += 1
         print "Procesando archivo", i, "de", len(matches)
-        records_kmz = read_kmz(f)
-        formatted = format_speed_records(records_kmz)
-        records = np.concatenate((records,formatted.tolist()))
+        try:
+            records_kmz = read_kmz(f)
+            formatted = format_speed_records(records_kmz)
+            records = np.concatenate((records,formatted.tolist()))
+        except Exception:
+            print "Error en descompresión o formateo, continuando"
 
     print 'Recuperados', len(records),"archivos utiles"
     print 'Generando JSON ...'
