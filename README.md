@@ -1,41 +1,44 @@
-# Visualización para datos probeta en Buses de la ciudad de Bahía Blanca, Argentina.
-## Mario Varón
+# Visualization for public transport data in Bahía Blanca, Argentina
 ## Juan Sebastián Martínez
-## Universidad de los Andes, segundo semestre de 2016
+## Mario Varón
+## Universidad de los Andes, Fall 2016
 
-### Descripción
-La municipalidad de la ciudad de Bahía Blanca, Argentina, ha recopilado información sobre el recorrido de sus buses de transporte público desde el año 2010 hasta el año 2016. Con esta información, resulta interesante para los analistas del transporte urbano el estudio del comportamiento de estos buses en sus recorridos diarios, así como el perfilamiento del tráfico de los usuarios del sistema de transporte masivo.
+### Description
+The city of Bahía Blanca in Argentina has gathered information about their bus transport system from the year 2010 to the year 2016. With this information, it is interesting for the urban transport analysts to study the behaviour of the buses in their normal routes, as well as discovering the behaviour of passengers in this transport system.
 
-Con esto en mente, la información sobre el recorrido de los buses en cuanto a su posición, velocidad, rumbo, pasajeros, y otras variables, pretende ser visualizada para cumplir con los siguientes objetivos:
+With this objectives, information about the bus routes, position, velocity, passengers and other variables is available for a visualization to reveal insights regarding the following specific goals:
 
-1. Visualizar la información descriptiva de tráfico obtenida de los datos probeta con el fin de obtener medidas de desempeño del tráfico(i.e tiempo de viaje o costo de viaje) que permitan construir un sistema ATIS (Sistemas de Información de Tráfico avanzado al viajero).
-2. Visualizar la información del APC  (Automatic Passenger Counting System) con el fin de optimizar el costo de operación de los buses públicos en la ciudad de Bahía Blanca.
-3. Preprocesar y Tratar los datos para obtener medidas estadísticas poblacionales que permitan caracterizar el comportamiento de los buses y en menor medida, del tráfico en la ciudad de Bahía Blanca.
-4. Derivar métricas que permitan caracterizar el comportamiento del tráfico de personas alrededor de la ciudad durante el día.
+1. Visualize the descriptive information of traffic with the purpose of deriving metrics to evaluate the transport system performance (i.e trip time or cost) in order to build an ATIS system (Advanced traveller information system).
 
-Para mayor información sobre el proyecto, diríjase a consltar la [propuesta.](https://github.com/JuanSMartinez/Visual_Analytics_201620/tree/master/Documentos)
+2. Visualize information of the APC (Automatic Passenger Counting System) system in order to optimize the operation cost of buses in the city of Bahía Blanca.
 
-### Caracterización de visualizaciones
+3. Preprocess transport data to derive statistics about the population that enable analysts to characterize the behaviour of buses and passengers to a certain extent.
+
+For more information about the proyect, please read our  [documents.](https://github.com/JuanSMartinez/Visual_Analytics_201620/tree/master/Documentos)
+
+### Visualization characteristics
 
 #### What:
 
-Datos geográficos (geometry-spatial)  con varios atributos cuantitativos secuenciales, entre esos velocidad de desplazamiento, cantidad de pasajeros, distancia recorrida, rumbos y estado del vehículo clasificados por datos categóricos, como la placa del bus.  
+Geographical data with different quantitative and sequential attributes, which include displacement velocities, number of passangers, distance travelled, course and the state of the bus represented by categorical data, like the license plate of the bus.
 
 #### Why:
 
-1.	Descubrir la distribución de los datos de velocidad de desplazamiento por franja horaria.
-2.	Explorar los Outliers de velocidad para identificar eventos de congestión no recurrente.
-3.	Identificar las rutas de los buses por franja horaria.
-4.	Descubrir las características de los datos de pasajeros clasificados por bus.
+The tasks for this project are:
+
+1. Discover the distribution of velocity data through the day.
+2. Explore the outliers of velocity to identify non-recurrent traffic congestion events.
+3. Identify the features of bus routes through the day.
+4. Discover the characteristics of passenger data classified by bus.
 
 #### How:
 
-Para las Tareas 1, 2 y 3: Map con formas (shapes) que usan la geometría de los datos y representen las magnitudes de velocidad de desplazamiento a través de las rutas de los buses.
-Para la Tarea 4: HeatMaps geográficos que representen las densidades de tráfico de pasajeros durante el día.
+Visualizing velocity and passenger data in horizon charts filtered by year, month and day. Both charts will contain data for the different buses and will be supported by an interactive map of the city that links the geographical data to the quantitative data.
 
-### Colaboración
-El proyecto se desarrolla con la colaboración de Claudio Delrieux y Rodrigo René Cura, quienes proporcionaron los datos de tráfico en el transporte público de la ciudad.
+### Collaboration
 
-### URL del curso
+The project is developed with the collaboration of Claudio Delrieux and Rodrigo René Cura, who provided the bus data in the city and represent the client and final user.
 
-Este proyecto se desarrolla bajo el marco del curso de maestría "Visual Analytics" de la Universidad de los Andes, la página oficial del curso se encuentra en el siguiente [link](http://johnguerra.co/classes/isis_4822_fall_2016/)
+### URL of the class
+
+This project was developed under the scheme of the course "Visual Analytics" of the university Universidad de los Andes in Bogotá Colombia. The official course website can be found [here.](http://johnguerra.co/classes/isis_4822_fall_2016/)
